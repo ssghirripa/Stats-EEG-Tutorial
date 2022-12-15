@@ -1,0 +1,216 @@
+---
+title: "Intro to ggplot2"
+output:
+  html_document:
+    df_print: paged
+---
+
+This is a very basic introduction to the use of ggplot2 for data visualisation in R.
+
+
+Okay, back to our favourite data set in the world: Iris <3 
+
+```{r}
+
+library(datasets)
+
+data(iris)
+
+```
+
+
+The 'gg' in 'ggplot2' stands for 'grammar of graphics'. There are 3 main components we need to worry about for the purposes of this tutorial:
+
+1. Data: what do we want to plot?
+2. Aesthetics: What scale do we want to use? i.e. mapping the data onto an aesthetic
+3. Geometry: what visual elements are we going to use to plot the data?
+
+Things to cover:
+- x and y axes
+- fill and colour
+- shape
+- size
+
+```{r}
+
+install.packages('ggplot2')
+library(ggplot2)
+
+```
+
+First, lets load in the data:
+
+```{r}
+
+ggplot(data = iris)
+
+```
+
+What happened? Nothing. 
+
+That's because we haven't actually told R what we want, we just said it needed to come from that data.
+
+Second, lets be more specific:
+
+```{r}
+
+ggplot(data = iris, aes(y = Sepal.Width, x = Petal.Width))
+
+
+```
+
+Okay, now we have axes, which is good progress. We haven't selected our geometry yet though, so lets do a scatter plot:
+
+```{r}
+
+ggplot(data = iris, aes(y = Sepal.Width, x = Petal.Width)) + geom_point()
+
+```
+
+Now we're getting there... But what's the problem here??
+
+We know that this data set involves 3 species, but they're all mashed together so who knows what's what?
+
+Let's add some colour to differentiate our species: 
+
+```{r}
+
+ggplot(data = iris, aes(y = Sepal.Width, x = Petal.Width, col = Species)) + geom_point()
+
+```
+
+But maybe I'm colour blind, so there are other ways to tell what species is what:
+
+```{r}
+
+ggplot(data = iris, aes(y = Sepal.Width, x = Petal.Width, shape = Species)) + geom_point()
+
+```
+
+Why don't we have both?
+
+```{r}
+
+ggplot(data = iris, aes(y = Sepal.Width, x = Petal.Width, col = Species, shape = Species)) + geom_point()
+
+```
+
+Alright, so the data is all there, but we're going straight to Nature with this groundbreaking finding. We need to make this publication ready with some axes titles
+
+```{r}
+
+ggplot(data = iris, aes(y = Sepal.Width, x = Petal.Width, col = Species, shape = Species)) + geom_point() +
+  ylab("Sepal Width (cm)") + xlab("Petal Width (cm)")
+
+```
+
+This still isn't quite to my taste yet, I don't like the grid in the background, so let's get rid of that. I always want to add a linear regression line for good measure
+
+```{r}
+
+ggplot(data = iris, aes(y = Sepal.Width, x = Petal.Width, col = Species, shape = Species)) + geom_point() + geom_smooth(method = "lm") +
+  ylab("Sepal Width (cm)") + xlab("Petal Width (cm)") + theme_classic()
+
+```
+
+That'll do. Let's do a boxplot now. First the ugly version:
+
+```{r}
+
+boxplot(Sepal.Length ~ Species, data = iris)
+
+```
+
+Now with ggplot:
+
+```{r}
+
+ggplot(data = iris, aes(x = Species, y = Sepal.Length, fill = Species)) + geom_boxplot() +
+  xlab("Species") + ylab("Sepal Length (cm)") + theme_classic()
+
+```
+
+
+Okay, time to get a bit more full on. Most of the time, you're interested in plotting group means. Unfortunately, this isn't actually the easiest thing to do with ggplot2. But let's step through an example. Quick disclaimer, there are probably so many ways one can achieve this same outcome, but here's one using some functions found in the dplyr package
+
+```{r}
+
+install.packages("dplyr")
+library(dplyr)
+
+```
+
+dplyr is a package that contains functions required for data frame manipulation. Here we use the pipe operator (%>%) to feed information between expressions
+
+```{r}
+
+ irisSummary <- iris %>%
+   group_by(Species) %>%
+   summarise(
+     meanLength = mean(Sepal.Length),
+     sd = sd(Sepal.Length)
+   )
+
+irisSummary
+
+```
+
+Let's build up a bar plot from here. 
+
+(stat = identity means that we're telling ggplot what the y value will be)
+
+```{r}
+
+ggplot(irisSummary, aes(x = Species, y = meanLength)) + geom_bar(stat = "identity")
+
+```
+
+This plot is absolutely revolting in appearance, so let's fix that up a bit by altering the bars and labels:
+
+```{r}
+
+ggplot(irisSummary, aes(x = Species, y = meanLength, fill = Species)) +
+  geom_bar(stat = "identity", colour = "black", width = 0.5) +
+  xlab("Species") +
+  ylab("Mean Sepal Length (cm)") +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 8),breaks=c(0, 1, 2, 3, 4, 5, 6, 7, 8)) +
+  theme_classic()
+
+```
+
+The last thing we can add are error bars. We calculated standard deviation earlier, so let's use that:
+
+```{r}
+
+ggplot(irisSummary, aes(x = Species, y = meanLength, fill = Species)) +
+  geom_bar(stat = "identity", colour = "black", width = 0.5) +
+  xlab("Species") +
+  ylab("Mean Sepal Length (cm)") +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 8),breaks=c(0, 1, 2, 3, 4, 5, 6, 7, 8)) +
+  theme_classic() +
+  geom_errorbar(aes(ymin = meanLength - sd, ymax = meanLength + sd), size = 0.3, width = 0.2, 
+                position = position_dodge(0.9))
+
+```
+
+If we want to get really picky, we can start messing with font sizes etc. I'm also annoyed that the Species names aren't capitalised, so I'm going to add that too: 
+
+```{r}
+
+ggplot(irisSummary, aes(x = Species, y = meanLength, fill = Species)) +
+  geom_bar(stat = "identity", colour = "black", size = 0.5, width = 0.5) +
+  xlab("Species") +
+  ylab("Mean Sepal Length (cm)") +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 8),breaks=c(0, 1, 2, 3, 4, 5, 6, 7, 8)) +
+  scale_x_discrete(labels=c("Setosa", "Versicolour", "Virginica")) +
+  theme_classic() +
+  geom_errorbar(aes(ymin = meanLength - sd, ymax = meanLength + sd), size = 0.3, width = 0.2, position = position_dodge(0.9)) +
+  theme(axis.line = element_line(colour = "black", size = 1),
+        axis.text = element_text(size = 18, colour = "black"),
+        axis.title = element_text(size = 18, colour = "black"),
+        legend.text = element_text(size = 18),
+        legend.title = element_text(size = 18))
+
+```
+
+

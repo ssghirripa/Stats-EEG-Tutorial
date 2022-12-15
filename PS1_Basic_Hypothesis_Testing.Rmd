@@ -1,0 +1,165 @@
+---
+title: "Problem Set 1: Are older people smarter than younger people?"
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
+---
+
+My PhD is about cognitive ageing. Unfortunately for me, I barely ever detect age differences. As a side project, I have decided to investigate this phenomenon further, and you're going to help me. My new research question is 'are old people smarter than young people?'
+
+I've put together some data that will help us answer this research question. All the data you need is held in a data frame called 'AgeingIQ'. It contains:
+  - Participant ID
+  - Age (in years)
+  - Age Group (old or young)
+  - Sex (M or F)
+  - Education Level (highest completed level of education: Year 12, undergraduate, postgraduate)
+  - IQ score (based on the National Adult Reading Test- a measure of pre-morbid verbal IQ)
+
+Some handy packages:
+```{r}
+
+library(lsr)
+library(psych)
+
+```
+
+Before we begin, what is your RESEARCH hypothesis for the research question?
+```{r}
+# ...  
+
+```
+What is the NULL and the ALTERNATIVE hypothesis for our main statistical question?
+```{r}
+# Null: 
+# Alternative: 
+```
+
+First, descriptive statistics are in order. Find:
+
+1. The mean and SD of age in years of both the YA and OA group
+
+```{r}
+
+#
+
+```
+2. The mean and SD of NART_IQ of both the YA and OA group
+
+```{r}
+#
+
+```
+3. Plot boxplots of the IQ data
+
+```{r}
+#
+
+```
+4. Check the IQ data for normality using the Shapiro-Wilk test (and associated methods, if need be)
+
+```{r}
+#
+
+
+```
+5. Qualitatively sum up your findings in terms of the predicted results
+
+```{r}
+# ...
+```
+
+
+The descriptive stats should give you a reasonable idea of what we expect to see now. But, we need to actually run the test. 
+
+Thinking about the number of groups, and the characteristic of these groups, what statistical test do you need to run to test whether older people are smarter than young people?
+```{r}
+#...
+```
+
+Now run the test:
+
+```{r}
+
+#
+```
+
+Now interpret the findings with reference to both the statistical hypothesis AND the research hypothesis
+
+```{r}
+
+# statistical hypothesis:
+
+# research hypothesis:
+
+```
+
+
+We've settled that debate now. However, I have a secondary research question. Maybe it isn't only age that influences whether or not they are smart- what if education level also plays a role?
+
+In this data set, there are 3 levels of education (year 12, undergraduate, postgraduate). Without considering age in this case, what statistical test can I run to determine whether education level influences IQ?
+
+```{r}
+#...
+
+```
+
+Now run it:
+```{r}
+#
+
+```
+
+Run post-hoc tests (if required):
+```{r}
+#
+
+```
+
+And interpret:
+```{r}
+#
+```
+
+
+Okay, one last one (have to cover all that we've discussed so I'm clutching at straws here). What if, you get smarter as you get older? In other words, is age in YEARS associated with being smarter? Ageing brings wisdom so they say...
+
+What statistical test are you going to run to determine whether this relationship exists?
+```{r}
+#
+```
+
+Now run it
+```{r}
+
+
+```
+
+And interpret:
+```{r}
+
+```
+
+
+Finally, as an extension problem. I'm interested in seeing whether both age AND education level are related to IQ In this case, I have two between subjects variables (AgeGroup and EducationLevel)
+
+What test do you need to run? Hint, you need to load this package first:
+```{r}
+
+library(ez)
+
+# ...
+
+```
+
+Now run it:
+```{r}
+
+
+```
+
+Interpret?
+```{r}
+
+```

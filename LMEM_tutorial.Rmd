@@ -1,0 +1,47 @@
+---
+title: "A Noob Linear Mixed Effects Model Example"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+There are a few packages we can use, but the most popular is lme4. There's one caveat with this, and that is the fact it doesn't print out p-values. Given that we hedge everything on our trusty, arbitrary alpha level, we need to load in another package that will give us the info we need.
+
+```{r}
+library(lme4)
+library(lmerTest)
+```
+
+Instead of using AgeingIQ, I'm using some kind of made up data from another one of my studies. The variables are:
+
+1. Participant ID
+2. Working Memory Load (1,3 or 5 letters displayed)
+3. Reaction time (RT) (s)
+4. Accuracy (Acc) (%)
+5. Physical Activity (High/Low)
+
+The repeated measure in this data set are RT and Acc for each WM load (within subjects factor). Physical Activity is a between subjects factor. 
+
+What we are interested in determining in this data set is whether there is an interaction between working memory performance at increasing difficulty and physical activity. There are a few ways we can tackle this. You could do a repeated measures ANOVA. However, the whole point of this tutorial is to run a mixed effects model which allows us to control for our random effects (in this case, participant ID). 
+
+Let's just look at the main effects. In order to view the results of the model, the anova() function is used.
+
+```{r}
+
+model <- lmer(Acc ~ WM_Load + PhysicalActivity + (1|Participant), data = lmeData)
+
+anova(model)
+
+```
+
+To add an interaction term, you change the + to a *:
+
+```{r}
+
+modelInt <- lmer(Acc ~ WM_Load*PhysicalActivity + (1|Participant), data = lmeData)
+
+anova(modelInt)
+
+```
