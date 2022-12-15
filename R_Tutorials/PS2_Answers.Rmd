@@ -1,0 +1,86 @@
+---
+title: "Problem Set 2: The return of the smart old people"
+output: html_notebook
+---
+
+Okay, after running the appropriate statistical tests in PS1, we need to produce some plots in order to publish our results in Nature. This problem set will use ggplot2 to visualise the results of these analyses 
+
+First, some packages:
+```{r}
+#install.packages('ggplot2')
+library(ggplot2)
+
+#install.packages("dplyr")
+library(dplyr)
+```
+
+We plotted a box plot in PS1 using the ugly R defaults, and went through the ggplot boxplot in the last tutorial. Let's not beat a dead horse. Instead, I want to use a violin plot here, which is a bit of a hybrid box and kernel density plot. Here, use a violin plot to inspect the distribution of data for each age group's NART_IQ results.
+
+I'll get you started, but you need to do the rest.You may need to look up the arguments that geom_violin might take. For example, will you use a colour fill? Will you change the theme? Rename the axes? Will you add individual data points? Will you add a boxplot inside it? Kind of up to you. This is the most challenging part, so see how you go here:
+
+```{r}
+
+ggplot(data = AgeingIQ, aes(y = NART_IQ, x = AgeGroup, fill = AgeGroup)) + 
+   geom_violin(trim = FALSE, colour = "black", position = position_dodge(width = 1)) +
+   geom_jitter(shape=16, size = 2, position=position_jitterdodge(jitter.width = .2, 
+                                                       jitter.height = 0.5, dodge.width = 0.9, 
+                                                       seed = NA)) +
+   theme_classic() + 
+   theme(legend.position = "none") +
+   xlab("Age Group") +
+   ylab("NART IQ")
+
+
+
+```
+
+
+Next, we ran a t-test to compare means. Usually, these results will be displayed in a barplot fashion. In order to do this, we discussed using a summary function to pull out the appropriate descriptive statistics beforehand. Here, plot a barplot that demonstrates the difference between NART_IQ scores in each age group. Again, we want these figures to be ready to be submitted to Nature. What are you going to include on them so we don't get a desk rejection?
+
+
+```{r}
+
+# This example code might help:
+
+ Summary <- AgeingIQ %>%
+   group_by(AgeGroup) %>%
+   summarise(
+     mean = mean(NART_IQ),
+     sd = sd(NART_IQ)
+   )
+
+
+# here, call the ggplot function, enter the data, aes and geometry as needed:
+
+ggplot(data = Summary, aes(x = AgeGroup, y = mean, fill = AgeGroup)) + 
+   geom_bar(stat = "identity", 
+            colour = "black", 
+            width = .5, 
+            position=position_dodge()) + 
+   geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd),
+                size=.3,    
+                width=.2,
+                position=position_dodge(.9)) +
+   xlab("Age Group") + 
+   ylab(" NART IQ") +
+   scale_y_continuous(expand = c(0,0), limits = c(0, 120)) + 
+   theme_classic() +
+   theme(legend.position = "none")
+```
+
+
+Finally, we discussed the correlation between age in years and NART IQ. Plot a scatter plot of this correlation and add a linear line of best fit. Again, what needs to go on this plot and how are you going to make it look pleasing to the eye?
+
+```{r}
+
+ggplot(data = AgeingIQ, aes(x = Age, y = NART_IQ, fill = AgeGroup)) +
+   geom_point() +
+   geom_smooth(method = 'lm', colour = 'black') +
+   ylab('NART IQ') + 
+   xlab('Age (Years)') +
+   theme_classic()
+
+```
+
+
+
