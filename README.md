@@ -6,3 +6,5 @@ The "lectures" folder contains some basic theory about statistical testing and E
 The "data" folder contains two basic datasets that the R tutorials use.
 
 The "R_Tutorials" folder contains R Markdown files that step through basic statistical analyses and visualisation. Some have answers included, others contain only the scenario and instructions. 
+
+Recommended order: Introduction_to_R > PS1_Basic_Hypothesis_Testing > ggplot2_Tutorial > LMEM_tutorial
