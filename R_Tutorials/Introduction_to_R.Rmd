@@ -1,0 +1,153 @@
+---
+title: "R Introduction"
+output: html_notebook
+author: Sabrina Sghirripa
+---
+A very, very basic introduction to R
+
+Variables store information to be referenced and manipulated. These can be numeric, character or logical in nature. The backwards arrow is the "assignment" operator and assigns a value to a variable
+
+```{r}
+# Variables
+
+x <- 5 # numeric 
+
+y <- "hello world" # character or "string"
+
+z <- TRUE # logical
+
+```
+In its most basic form, R acts as a calculator. For example, try some basic arithmetic operations and store them in variables:
+```{r}
+# Basic arithmetic operations 
+
+a <- 5 + 5
+
+b <- 10 - 5
+
+c <- 4 * 5
+
+d <- 30 / 5
+```
+R also uses functions, which take an argument. In this case, to get the square root, use the function "sqrt()" 
+```{r}
+x <- sqrt(100)
+
+```
+Basic data structures
+
+R operates on data structures. The most simple of these is a vector, which is a collection of values. To set up a vector named "v", the function c() is used. There are many other data structures, including arrays (or matrices), factors and lists
+```{r}
+v <- c(1, 2, 3, 4, 5) # Numeric vector
+
+v2 <- c("a", "b", "c") # Character vector
+
+```
+One of the more common data structures is a data frame, which takes the following format. Loading in data from excel or a csv will usually result in a data frame.
+```{r}
+df <- data.frame(x = c(), y = c())
+
+```
+Alright enough of the basic syntax. 
+
+One of the best things about R is the fact it is expandable. R packages are collections of functions, code and sample data that are stored in a library in the R environment. When you start up R, only the default packages are present. To use packages that aren't default, use the "install.packages" function. For example, "tidyverse" is a collection of packages used for data science. Once a package is installed, you need to load it into your current R session by using "library()". It is super handy to install and load, so lets do that now:
+```{r}
+install.packages("tidyverse")
+
+library(tidyverse)
+```
+Now to load some data. R comes with lots of default data sets. One of the more simple ones is "iris" which was used in a 1936 paper on something to do with flower species. Idk the specifics, but it's a good one for tutorials! Let's load that now using the "data()" function. When you type this in the command line, you can see that there's a heap of datasets to choose from and explore. We'll stick with iris for now:
+```{r}
+data("iris")
+
+```
+Here, we'll use some basic functions to explore the iris dataset and run some basic descriptive statistics
+```{r}
+# Find dimensions of the data set
+
+nrow(iris) # number of rows
+
+ncol(iris) # number of columns
+
+str(iris) # gives an overview of the data frame. Note that 4 columns are numerical, and 1 is a factor
+```
+Each of these are basic functions that take the argument "data". In this case, the data is "iris", but we need to be more specific about which column we are interested in describing. The way we select out columns in a data frame is by using the $ operator
+```{r}
+# Find descriptive statistics 
+
+mean(iris$Sepal.Length) # this line finds the mean sepal length
+
+median(iris$Sepal.Width) # median sepal width
+
+sd(iris$Petal.Length) # standard deviation of petal length
+
+range(iris$Petal.Width) # range of petal width
+
+cor(iris$Sepal.Length, iris$Sepal.Width) # basic pearson's correlation, which takes two arguments. In this case, we'll correlate sepal length and width
+
+```
+Basic plotting 
+
+
+R is fantastic for visualising data. These plots can vary widely in their complexity depending on what you're looking to do. As an example, we'll plot here a basic plot, a slightly better basic plot, and a good but slightly less basic plot. 
+```{r}
+# Basic plot. Quite ugly, very uninformative.
+
+plot(iris$Sepal.Length, iris$Sepal.Width)
+
+# Slightly better basic plot, but still bad. At least there are some titles. Notice how the "plot" function can take many arguments. To find out more about a function, you can type "help(plot)" in the command line (or, ?plot)
+
+plot(iris$Sepal.Length, iris$Sepal.Width, col = "red", xlab = "Length (cm)", ylab = "Width (cm)", main = "I <3 Iris")
+
+
+```
+To get good plots, using the ggplot2 package is a good idea. ggplot2 has it's own syntax which can take a while to get used to, but the time investment is worth it. Here is a brief example of what ggplot2 can produce in relatively little amounts of code:
+```{r}
+# install and load ggplot2
+
+install.packages('ggplot2')
+
+library(ggplot2)
+
+ggplot(data = iris, 
+       aes(x = Petal.Length, y = Petal.Width, col = Species)) + 
+       geom_point() +
+  ylab("Sepal Width (cm)") +
+  xlab("Sepal Length (cm)") +
+  theme_classic()
+
+
+```
+Finally, R is used heavily in data manipulation and wrangling. For example, we might only want to pull out small amounts of data to plot or run statistics on. Here are some basic examples of this:
+
+First, we might want to subset our data. If for some reason I'm only interested in the setosa species of iris, I can take out the data related to that species. 
+```{r}
+# Subsetting data
+
+setosa <- subset(iris, Species == "setosa")
+
+```
+Second, when we calculated the mean of sepal length above, it calculated the mean of the whole column without considering species. Obviously this isn't ideal. We can use the "aggregate()" function to calculate the means for each species:
+```{r}
+# Aggregating data
+
+aggregate(Sepal.Length ~ Species, data = iris, mean)
+
+```
+Finally, let's combine some of these concepts to plot a decent represetnation of the data in the iris dataset. First, I will create a new data frame that contains the mean sepal length of each species. I will then change the column name of the "means" data frame to something that makes more sense. Then, I'll plot these means in a bar graph using ggplot2
+```{r}
+# Create data frame with means
+means <- aggregate(Sepal.Length ~ Species, data = iris, mean)
+
+# Change the column names of the "means" data frame
+colnames(means) <- c("Species", "meanLength")
+
+# Plot the means in a bar plot
+ggplot(data = means, 
+       aes(x = Species, y = meanLength)) + 
+       geom_bar(stat = "identity") +
+  ylab("Sepal Length (cm)") +
+  xlab("Species") +
+  theme_classic()
+
+```
